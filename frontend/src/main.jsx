@@ -1,26 +1,28 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from './components/Home.jsx';
 import Shift from './components/Shift.jsx';
+import Attandance from './components/Attandance.jsx';
 import AddShift from './components/AddShift.jsx';
 import Request from './components/Request.jsx';
 import Login from './components/Login.jsx';
-
-
+import Register from './components/Register.jsx'
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Login />,
-  },
-  {
-    path: "/Home",
-    element: <Home />,
+  },{
+    path: "/Register",
+    element: <Register />,
   },
   {
     path: "/Shift",
     element: <Shift />,
+  },
+  {
+    path: "/Attandance",
+    element: <Attandance />,
   },
   {
     path: "/AddShift",
