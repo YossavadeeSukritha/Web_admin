@@ -1,12 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Shift from './components/Shift.jsx';
-import Attandance from './components/Attandance.jsx';
+import ShiftMaster from './components/ShiftMaster.jsx';
+import Attendance from './components/Attendance.jsx';
 import AddShift from './components/AddShift.jsx';
 import Request from './components/Request.jsx';
 import Login from './components/Login.jsx';
 import Register from './components/Register.jsx'
+import Employees from './components/Employee.jsx';
+import Location from './components/Location.jsx';
+import ShiftManagement from './components/ShiftMangement.jsx';
 
 const router = createBrowserRouter([
   {
@@ -17,12 +20,12 @@ const router = createBrowserRouter([
     element: <Register />,
   },
   {
-    path: "/Shift",
-    element: <Shift />,
+    path: "/ShiftMaster",
+    element: <ShiftMaster />,
   },
   {
-    path: "/Attandance",
-    element: <Attandance />,
+    path: "/Attendance",
+    element: <Attendance />,
   },
   {
     path: "/AddShift",
@@ -31,6 +34,18 @@ const router = createBrowserRouter([
   {
     path: "/Request",
     element: <Request />,
+  },
+  {
+    path: "/Employees",
+    element: <Employees />,
+  },
+  {
+    path: "/Location",
+    element: <Location />,
+  },
+  {
+    path: "/ShiftManagement",
+    element: <ShiftManagement />,
   }
 ]);
 

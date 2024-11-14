@@ -1,35 +1,26 @@
-import { useState, useEffect } from "react";
 import { UserOutlined, KeyOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Avatar, Popover, Button, List  } from 'antd';
+import { Avatar, Popover, Button, List } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const UserProfile = () => {
-    const [currentTime,setCurrentTime] = useState(new Date());
-    useEffect(()=>{
-        const interval = setTimeout(()=>{
-            setCurrentTime(new Date())
-        },1000)
-        return () => {
-            clearTimeout(interval)
-        }
-    })
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        navigate('/');
+    };
     const content = (
         <List>
-          <List.Item><UserOutlined /> My Account</List.Item>
-          <List.Item><KeyOutlined /> Update Password</List.Item>
-          <List.Item>
-            <Button type="primary"><LogoutOutlined /> Logout</Button>
-          </List.Item>
+            <List.Item><UserOutlined /> My Account</List.Item>
+            <List.Item>
+                <Button type="primary" onClick={handleLogout}><LogoutOutlined /> Logout</Button>
+            </List.Item>
         </List>
-      );
+    );
     return (
-        <div style={{display:"flex"}}>
-            <div style={{width:'150px',color:'blue',marginRight:'20px'}}>
-                {`${currentTime.toLocaleDateString()} ${currentTime.toLocaleTimeString()} `}
-            </div>
+        <div style={{ display: "flex" }}>
             <div>
                 <Popover placement="bottomRight" content={content} >
                     <Avatar size={38} icon={<UserOutlined />} />
-                </Popover>                
+                </Popover>
             </div>
         </div>
     )

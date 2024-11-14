@@ -73,7 +73,7 @@ const Request = () => {
 
     return (
         <Layout className="layout">
-            <Sider collapsed={collapsed} className="sidebar" theme={darkTheme ? 'dark' : 'light'}>
+            <Sider collapsed={collapsed} className="sidebar" theme={darkTheme ? 'dark' : 'light'} width={250}>
                 <Logo />
                 <MenuList darkTheme={darkTheme} />
                 <ToggleThemeButton darkTheme={darkTheme} toggleTheme={() => setDarkTheme(!darkTheme)} />

@@ -7,7 +7,7 @@ import ToggleThemeButton from './ToggleThemeButton.jsx';
 import UserProfile from './UserProfile.jsx';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 
-const { Header, Sider, Content, Footer } = Layout;
+const { Header, Sider} = Layout;
 
 const App = () => {
     //theme color

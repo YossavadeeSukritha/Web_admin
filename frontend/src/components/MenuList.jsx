@@ -1,4 +1,4 @@
-import { AuditOutlined, ScheduleFilled, SignatureFilled, FileTextOutlined } from "@ant-design/icons";
+import { AuditOutlined, ScheduleFilled, SignatureFilled, FileTextOutlined ,UserOutlined,CompassOutlined} from "@ant-design/icons";
 import { Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 
@@ -11,10 +11,13 @@ const MenuList = ({ darkTheme }) => {
     }
 
     const items = [   
-        { label: 'Attandance', key: 'Attandance', icon: <ScheduleFilled /> },
-        { label: 'Shift', key: 'Shift', icon: <AuditOutlined /> },
+        { label: 'Attendance', key: 'Attendance', icon: <ScheduleFilled /> },
+        { label: 'Employees', key: 'Employees', icon: <UserOutlined /> },
+        { label: 'Shift Master', key: 'ShiftMaster', icon: <AuditOutlined /> },
         { label: 'Assign Shift', key: 'AddShift', icon: <SignatureFilled /> },
-        { label: 'Request', key: 'Request', icon: <FileTextOutlined /> },
+        { label: 'Shift Management', key: 'ShiftManagement', icon: <FileTextOutlined /> },
+        { label: 'Location Master', key: 'Location', icon: <CompassOutlined />},
+        { label: 'Request', key: 'Request', icon: <FileTextOutlined /> }
     ]
     return (
         <Menu
