@@ -769,6 +769,41 @@ app.post('/api/upload-assigned-shifts', async (req, res) => {
         });
     }
 });
+//Upload location master
+app.post('/api/upload-locationmaster', async (req, res) => {
+    const { locations } = req.body;
+
+    if (!locations || locations.length === 0) {
+        return res.status(400).json({ message: 'No location data provided.' });
+    }
+
+    try {
+        // Assuming you're using a database connection (e.g., PostgreSQL with pg)
+        for (const location of locations) {
+            const query = `
+                INSERT INTO locations (location_id, location_name, latitude, longitude)
+                VALUES ($1, $2, $3, $4)
+                ON CONFLICT (location_id) DO UPDATE 
+                SET location_name = EXCLUDED.location_name, 
+                    latitude = EXCLUDED.latitude, 
+                    longitude = EXCLUDED.longitude
+            `;
+            
+            await pool.query(query, [
+                location.location_id, 
+                location.location_name, 
+                location.latitude, 
+                location.longitude
+            ]);
+        }
+
+        res.status(200).json({ message: 'Locations uploaded successfully!', total: locations.length });
+    } catch (error) {
+        console.error('Error uploading locations:', error);
+        res.status(500).json({ message: 'Error uploading locations.', error: error.message });
+    }
+});
+
 
 //edit employee
 app.put('/api/employees/:employee_id', async (req, res) => {
@@ -838,8 +873,6 @@ app.post('/api/add-employee-locations', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-
-
 
 app.put('/api/update-employee-locations', async (req, res) => {
     const { employee_id, location_ids } = req.body;
@@ -932,12 +965,23 @@ app.delete('/api/deleteshiftmanagement/:assignedShiftId', async (req, res) => {
     }
 });
 
+app.put('/api/updatetshift/:assignedShiftId', async (req, res) => {
+    const { assignedShiftId } = req.params; // รับ AssignedShift ID จาก URL
+    const { shiftId } = req.body; // รับ Shift ID ใหม่จาก Body
 
+    try {
+        const result = await pool.query(
+            `UPDATE AssignedShifts
+            SET shift_id = $1
+            WHERE assigned_shift_id = $2`, 
+            [shiftId, assignedShiftId] // อัปเดต Shift ID ในฐานข้อมูล
+        );
 
-
-
-
-
-
+        res.json({ message: 'Shift updated successfully' });
+    } catch (err) {
+        console.error('Error updating shift:', err);
+        res.status(500).json({ error: 'Failed to update shift' });
+    }
+});
 
 app.listen(5000, () => console.log(`Server is running on port 5000`));

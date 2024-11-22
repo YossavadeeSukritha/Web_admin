@@ -11,15 +11,14 @@ const { Header, Sider, Content } = Layout;
 const Setting = () => {
     const [darkTheme, setDarkTheme] = useState(true);
     const [collapsed, setCollapsed] = useState(false);
-    const [value, setValue] = useState('noautoclockout'); // ค่าเริ่มต้นเป็น 'noautoclockout'
+    const [value, setValue] = useState('noautoclockout');
     const [radius, setRadius] = useState('');
-    const [isEditing, setIsEditing] = useState(false);  // เพิ่มสถานะสำหรับการแก้ไข
+    const [isEditing, setIsEditing] = useState(false);  
 
     const {
         token: { colorBgContainer },
     } = theme.useToken();
 
-    // ดึงค่า radius จากฐานข้อมูลเมื่อคอมโพเนนต์โหลด
     useEffect(() => {
         const fetchRadius = async () => {
             try {
@@ -66,7 +65,7 @@ const Setting = () => {
     };
 
     const handleEdit = () => {
-        setIsEditing(true);  // เปลี่ยนเป็นโหมดแก้ไข
+        setIsEditing(true);  
     };
 
     return (
@@ -88,7 +87,7 @@ const Setting = () => {
                             value={radius}
                             onChange={(e) => setRadius(e.target.value)}
                             placeholder="Set radius (m)"
-                            disabled={!isEditing}  // ปิดการแก้ไขถ้าไม่อยู่ในโหมดแก้ไข
+                            disabled={!isEditing}  
                             style={{ width: "30%" }}
                         />
 
@@ -111,7 +110,7 @@ const Setting = () => {
                         type="primary"
                         htmlType="submit"
                         onClick={handleSave}
-                        disabled={!isEditing}  // ปิดการใช้งานถ้าไม่ได้อยู่ในโหมดแก้ไข
+                        disabled={!isEditing}  
                     >
                         Save
                     </Button>

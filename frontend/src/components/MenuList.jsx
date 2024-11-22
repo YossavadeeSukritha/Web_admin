@@ -1,12 +1,4 @@
-import {
-    AuditOutlined,
-    ScheduleFilled,
-    SignatureFilled,
-    FileTextOutlined,
-    UserOutlined,
-    CompassOutlined,
-    SettingOutlined
-} from "@ant-design/icons";
+import { AuditOutlined,ScheduleFilled,SignatureFilled,FileTextOutlined,UserOutlined,CompassOutlined,SettingOutlined} from "@ant-design/icons";
 import { Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Layout, theme, Input, Table, Space, Badge, Select, Modal, Form, message, Upload, Divider } from "antd";
-import { MenuUnfoldOutlined, MenuFoldOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, Layout, theme, Input, Table, Space, Badge, Select, Modal, Form, message, Divider, Upload} from "antd";
+import { MenuUnfoldOutlined, MenuFoldOutlined, DeleteOutlined ,UploadOutlined} from '@ant-design/icons';
 import '../index.css';
 import Logo from './Logo.jsx';
 import MenuList from './MenuList.jsx';
@@ -117,6 +117,56 @@ const Location = () => {
         }
     };
 
+    // File Upload Handlers
+    const handleFileChange = (info) => {
+        if (info.file.status === 'done') {
+            message.success(`${info.file.name} file uploaded successfully`);
+        } else if (info.file.status === 'error') {
+            message.error(`${info.file.name} file upload failed.`);
+        }
+    };
+
+    const handleBeforeUpload = (file) => {
+        const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        if (!isExcel) {
+            message.error('You can only upload Excel file!');
+        }
+        return isExcel;
+    };
+
+    const handleFileUpload = async (file) => {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const data = e.target.result;
+            const workbook = XLSX.read(data, { type: 'binary' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const locationsData = XLSX.utils.sheet_to_json(sheet); 
+    
+            try {
+                const response = await fetch('http://localhost:5000/api/upload-locationmaster', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ locations: locationsData }), 
+                });
+    
+                const result = await response.json();
+                if (response.ok) {
+                    message.success('Locations uploaded successfully!');
+                } else {
+                    message.error(`Failed to upload locations: ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Error uploading locations:', error);
+                message.error('Error uploading locations');
+            }
+        };
+        reader.readAsBinaryString(file); 
+    };
+    
+
     return (
         <Layout className="layout">
             <Sider collapsed={collapsed} className="sidebar" theme={darkTheme ? 'dark' : 'light'} width={250}>
@@ -127,7 +177,7 @@ const Location = () => {
             <Layout>
                 <Header style={{ display: 'flex', justifyContent: 'space-between', background: colorBgContainer, padding: '0 10px' }}>
                     <Button icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} onClick={() => setCollapsed(!collapsed)} />
-                  
+
                 </Header>
                 <Content style={{ padding: '10px' }}>
                     <small>Location Master</small>
@@ -185,6 +235,24 @@ const Location = () => {
                                 >
                                     <Input placeholder="Enter Longitude" />
                                 </Form.Item>
+
+                                <Divider />
+                                <h3 style={{ marginBottom: '1rem' }}>Download Template File</h3>
+                                <a href="Insert_Location_Master.xlsx" download>
+                                    <Button type="primary">Insert Location Master Template</Button>
+                                </a>
+
+                                <Divider />
+                                <h3 style={{ marginBottom: '1rem' }}>Upload File</h3>
+                                <Upload
+                                    beforeUpload={handleBeforeUpload}
+                                    customRequest={({ file, onSuccess, onError }) => {
+                                        handleFileUpload(file).then(() => onSuccess());
+                                    }}
+                                    onChange={handleFileChange}
+                                >
+                                    <Button icon={<UploadOutlined />}>Upload Excel File</Button>
+                                </Upload>
                             </Form>
                         </Modal>
 

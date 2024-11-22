@@ -18,7 +18,6 @@ const Login = () => {
         try {
             const response = await axios.post('http://localhost:5000/api/login', { email, password });
 
-            // เก็บ token และข้อมูล user
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
 
@@ -26,7 +25,7 @@ const Login = () => {
             navigate('/Attendance');
         } catch (error) {
             if (error.response) {
-                message.error(error.response.data.message); // ข้อความ error จาก backend
+                message.error(error.response.data.message); 
             } else {
                 message.error('Connection error. Please try again.');
             }

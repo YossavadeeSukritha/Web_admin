@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Layout, theme, Input, Table, Space, Badge, Select, Form, message, DatePicker, Tag, Dropdown, Modal } from "antd";
-import { MenuUnfoldOutlined, MenuFoldOutlined, CalendarOutlined } from '@ant-design/icons';
+import { Button, Layout, theme, Input, Table, Space, Select, Form, message, DatePicker, Tag, Dropdown, Modal } from "antd";
+import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import '../index.css';
 import Logo from './Logo.jsx';
 import MenuList from './MenuList.jsx';
@@ -28,6 +28,11 @@ const ShiftManagement = () => {
     const [shifts, setShifts] = useState([]);
     const navigate = useNavigate();
     const { token: { colorBgContainer } } = theme.useToken();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedShift, setSelectedShift] = useState(null); // สำหรับเก็บ shift ที่ถูกเลือก
+    const [availableShifts, setAvailableShifts] = useState([]); // เก็บข้อมูล shift IDs ที่ดึงมาจากฐานข้อมูล
+    const [newShiftId, setNewShiftId] = useState(''); // เก็บ Shift ID ที่เลือกใหม่
+
 
     const shiftColors = ['green', 'blue'];
 
@@ -109,6 +114,11 @@ const ShiftManagement = () => {
     // Context menu items
     const getContextMenuItems = (shift) => [
         {
+            key: 'update',
+            label: 'Update',
+            onClick: () => showUpdateModal(shift),
+        },
+        {
             key: 'delete',
             label: 'Delete',
             danger: true,
@@ -119,7 +129,7 @@ const ShiftManagement = () => {
             }
         }
     ];
-      
+
 
 
     // Table columns
@@ -133,36 +143,36 @@ const ShiftManagement = () => {
             render: (_, record) => {
                 const currentDay = day.date.format('YYYY-MM-DD');
                 const shifts = record.shiftsByDate[currentDay] || [];
-              
+
                 return (
-                  <Space direction="vertical" size={4}>
-                    {shifts.map((shift) => {
-                      // ตรวจสอบค่าของ 'AssignedShift ID' และ 'assigned_shift_id'
-                      console.log('Shift data:', shift);
-                      console.log('AssignedShift ID:', shift['AssignedShift ID']);
-                      console.log('assigned_shift_id:', shift.assigned_shift_id);
-              
-                      return (
-                        <Dropdown
-                          key={`${shift['Employee ID']}-${shift['Shift ID']}`}
-                          trigger={['contextMenu']}
-                          menu={{
-                            items: getContextMenuItems(shift),
-                          }}
-                        >
-                          <Tag
-                            color={shiftColors[shifts.indexOf(shift) % shiftColors.length]}
-                            style={{ padding: '4px 8px', cursor: 'context-menu' }}
-                          >
-                            {shift['Start time']} - {shift['End Time']}
-                          </Tag>
-                        </Dropdown>
-                      );
-                    })}
-                  </Space>
+                    <Space direction="vertical" size={4}>
+                        {shifts.map((shift) => {
+                            // ตรวจสอบค่าของ 'AssignedShift ID' และ 'assigned_shift_id'
+                            console.log('Shift data:', shift);
+                            console.log('AssignedShift ID:', shift['AssignedShift ID']);
+                            console.log('assigned_shift_id:', shift.assigned_shift_id);
+
+                            return (
+                                <Dropdown
+                                    key={`${shift['Employee ID']}-${shift['Shift ID']}`}
+                                    trigger={['contextMenu']}
+                                    menu={{
+                                        items: getContextMenuItems(shift),
+                                    }}
+                                >
+                                    <Tag
+                                        color={shiftColors[shifts.indexOf(shift) % shiftColors.length]}
+                                        style={{ padding: '4px 8px', cursor: 'context-menu' }}
+                                    >
+                                        {shift['Start time']} - {shift['End Time']}
+                                    </Tag>
+                                </Dropdown>
+                            );
+                        })}
+                    </Space>
                 );
-              }
-              
+            }
+
         }))
     ];
 
@@ -199,6 +209,43 @@ const ShiftManagement = () => {
         };
         fetchShifts();
     }, []);
+
+    const showUpdateModal = (shift) => {
+        setSelectedShift(shift); // เก็บ shift ที่เลือกไว้ใน Modal
+        setModalVisible(true); // แสดง Modal
+        fetchAvailableShifts(); // ดึงข้อมูล Shift IDs ใหม่จากฐานข้อมูล
+    };
+
+    const fetchAvailableShifts = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/shiftsmaster'); // ดึงข้อมูล Shift IDs จากฐานข้อมูล
+            setAvailableShifts(response.data); // เก็บข้อมูล Shift IDs ที่ได้รับ
+        } catch (err) {
+            console.error('Error fetching available shifts:', err);
+        }
+    };
+
+    const handleUpdateShift = async () => {
+        try {
+            if (!newShiftId) {
+                message.error('Please select a new Shift ID');
+                return;
+            }
+            
+            const url = `http://localhost:5000/api/updatetshift/${selectedShift['AssignedShift ID']}`;
+            const response = await axios.put(url, {
+                shiftId: newShiftId, // ส่ง Shift ID ใหม่
+            });
+    
+            message.success('Shift updated successfully');
+            fetchData(); // เรียกข้อมูลใหม่หลังการอัปเดต
+            setModalVisible(false); // ปิด Modal
+        } catch (err) {
+            console.error('Error updating shift:', err);
+            message.error('Failed to update shift');
+        }
+    };
+    
 
     return (
         <Layout className="layout">
@@ -245,6 +292,29 @@ const ShiftManagement = () => {
                         scroll={{ x: 'max-content' }}
                     />
 
+                    <Modal
+                        title="Update Shift"
+                        visible={modalVisible}
+                        onCancel={() => setModalVisible(false)} // ปิด Modal
+                        onOk={handleUpdateShift} // เมื่อกด OK ให้เรียกฟังก์ชัน update
+                    >
+                        <Form>
+                            <Form.Item label="Shift ID">
+                                <Select
+                                    value={newShiftId}
+                                    onChange={(value) => setNewShiftId(value)} // เมื่อเลือก Shift ID ใหม่
+                                >
+                                    {availableShifts.map((shift) => (
+                                        <Select.Option key={shift.shift_id} value={shift.shift_id}>
+                                            {shift.shift_id}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Form>
+                    </Modal>
+
+
 
                 </Content>
             </Layout>
@@ -253,6 +323,9 @@ const ShiftManagement = () => {
 };
 
 export default ShiftManagement;
+
+
+
 
 
 

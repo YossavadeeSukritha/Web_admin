@@ -83,7 +83,7 @@ const Attendance = () => {
 
         const csvData = filteredEmployees.map((employee) => ({
             No: employee['No'],
-            
+
             "Employee ID": employee['Employee ID'],
             Prefix: employee['Prefix'],
             "First Name": employee['First Name'],
@@ -207,7 +207,7 @@ const Attendance = () => {
             <Layout>
                 <Header style={{ display: 'flex', justifyContent: 'space-between', background: colorBgContainer, padding: '0 10px' }}>
                     <Button icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} onClick={() => setCollapsed(!collapsed)} />
-                
+
                 </Header>
                 <Content style={{ padding: '10px' }}>
                     <small>Attendance</small>
@@ -283,7 +283,7 @@ const Attendance = () => {
 
 
                         </div>
-                        <Button type="primary" style={{ marginLeft: '20px'}} onClick={exportToCSV}>
+                        <Button type="primary" style={{ marginLeft: '20px' }} onClick={exportToCSV}>
                             Export to CSV
                         </Button>
 
@@ -322,7 +322,7 @@ const Attendance = () => {
                             <Card bordered={false}>
                                 <Statistic
                                     title="No Show"
-                                    value={noShowCount} // จำนวน No-show
+                                    value={noShowCount} 
                                     valueStyle={{ color: '#666b73' }}
                                 />
                             </Card>
@@ -331,7 +331,7 @@ const Attendance = () => {
 
                     <Table
                         columns={columns}
-                        dataSource={filteredByDate} // ใช้ข้อมูลที่กรองแล้ว
+                        dataSource={filteredByDate} 
                         pagination={{ pageSize: 7 }}
                         rowKey={(record) => record.Clock_id}
                         scroll={{ x: 1000 }}
