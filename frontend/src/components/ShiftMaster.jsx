@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Layout, theme, Input, Table, Space, Badge, Select, Modal, Form, message, TimePicker } from "antd";
-import { MenuUnfoldOutlined, MenuFoldOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Layout, theme, Input, Table, Space, Badge, Select, Modal, Form, message, TimePicker , Upload, Divider} from "antd";
+import { MenuUnfoldOutlined, MenuFoldOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import '../index.css';
 import Logo from './Logo.jsx';
 import MenuList from './MenuList.jsx';
 import ToggleThemeButton from './ToggleThemeButton.jsx';
-import UserProfile from './UserProfile.jsx';
+
 import dayjs from 'dayjs';
+import * as XLSX from 'xlsx';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
@@ -48,10 +49,6 @@ const ShiftMaster = () => {
             ),
         },
     ];
-
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
 
     const handleOk = async () => {
         try {
@@ -124,6 +121,10 @@ const ShiftMaster = () => {
         }
     };
 
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
     const handleCancel = () => {
         setIsModalOpen(false);
     };
@@ -140,6 +141,55 @@ const ShiftMaster = () => {
         }
     };
 
+    const handleFileChange = (info) => {
+        if (info.file.status === 'done') {
+            message.success(`${info.file.name} file uploaded successfully`);
+        } else if (info.file.status === 'error') {
+            message.error(`${info.file.name} file upload failed.`);
+        }
+    };
+
+    const handleBeforeUpload = (file) => {
+        const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        if (!isExcel) {
+            message.error('You can only upload Excel file!');
+        }
+        return isExcel;
+    };
+
+    const handleFileUpload = async (file) => {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const data = e.target.result;
+            const workbook = XLSX.read(data, { type: 'binary' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const shiftsData = XLSX.utils.sheet_to_json(sheet); // อ่านข้อมูลจาก Excel Sheet
+    
+            try {
+                const response = await fetch('http://localhost:5000/api/upload-shift-master', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ shifts: shiftsData }), // ส่งข้อมูล shifts ไปยัง backend
+                });
+    
+                const result = await response.json();
+                if (response.ok) {
+                    message.success('Shift data uploaded successfully!');
+                } else {
+                    message.error('Failed to upload shift data');
+                }
+            } catch (error) {
+                console.error('Error uploading shift data:', error);
+                message.error('Error uploading shift data');
+            }
+        };
+        reader.readAsBinaryString(file);
+    };
+    
+
     return (
         <Layout className="layout">
             <Sider collapsed={collapsed} className="sidebar" theme={darkTheme ? 'dark' : 'light'} width={250}>
@@ -150,7 +200,7 @@ const ShiftMaster = () => {
             <Layout>
                 <Header style={{ display: 'flex', justifyContent: 'space-between', background: colorBgContainer, padding: '0 10px' }}>
                     <Button icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} onClick={() => setCollapsed(!collapsed)} />
-                    <UserProfile />
+                    
                 </Header>
                 <Content style={{ padding: '10px' }}>
                     <small>Shift Master</small>
@@ -213,6 +263,24 @@ const ShiftMaster = () => {
                                         ]}
                                     />
                                 </Form.Item>
+
+                                <Divider />
+                                <h3 style={{ marginBottom: '1rem' }}>Download Template File</h3>
+                                <a href="/Insert_Shift_Master.xlsx" download>
+                                    <Button type="primary">Insert Master Shift Template</Button>
+                                </a>
+
+                                <Divider />
+                                <h3 style={{ marginBottom: '1rem' }}>Upload File</h3>
+                                <Upload
+                                    beforeUpload={handleBeforeUpload}
+                                    customRequest={({ file, onSuccess, onError }) => {
+                                        handleFileUpload(file).then(() => onSuccess());
+                                    }}
+                                    onChange={handleFileChange}
+                                >
+                                    <Button icon={<UploadOutlined />}>Upload Excel File</Button>
+                                </Upload>
                             </Form>
                         </Modal>
                     </div>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Layout, theme, Input, Table, Space, Badge, Select, Modal, Form, message } from "antd";
-import { MenuUnfoldOutlined, MenuFoldOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Layout, theme, Input, Table, Space, Badge, Select, Modal, Form, message, Upload, Divider } from "antd";
+import { MenuUnfoldOutlined, MenuFoldOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import '../index.css';
 import Logo from './Logo.jsx';
 import MenuList from './MenuList.jsx';
 import ToggleThemeButton from './ToggleThemeButton.jsx';
-import UserProfile from './UserProfile.jsx';
+import * as XLSX from 'xlsx';
 
 const { Header, Sider, Content } = Layout;
 const { Search } = Input;
@@ -127,7 +127,7 @@ const Location = () => {
             <Layout>
                 <Header style={{ display: 'flex', justifyContent: 'space-between', background: colorBgContainer, padding: '0 10px' }}>
                     <Button icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} onClick={() => setCollapsed(!collapsed)} />
-                    <UserProfile />
+                  
                 </Header>
                 <Content style={{ padding: '10px' }}>
                     <small>Location Master</small>
@@ -148,8 +148,9 @@ const Location = () => {
                                 ))}
                             </Select>
                         </div>
+
                         <Button type="primary" onClick={showModal}>
-                            Add Location
+                            Add Location Master
                         </Button>
                         <Modal title="Add Location" open={isModalOpen} onOk={handleOk} okText="Submit" onCancel={handleCancel}>
                             <Form form={form} layout="vertical" style={{ marginTop: '2rem' }}>

@@ -4,51 +4,84 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ShiftMaster from './components/ShiftMaster.jsx';
 import Attendance from './components/Attendance.jsx';
 import AddShift from './components/AddShift.jsx';
-import Request from './components/Request.jsx';
 import Login from './components/Login.jsx';
-import Register from './components/Register.jsx'
 import Employees from './components/Employee.jsx';
 import Location from './components/Location.jsx';
 import ShiftManagement from './components/ShiftMangement.jsx';
+import PrivateRoute from './components/PrivateRoute.jsx';
+import AddLocation from './components/AddLocaion.jsx';
+import Setting from './components/Setting.jsx';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Login />,
-  },{
-    path: "/Register",
-    element: <Register />,
+    element: <Login />, 
   },
   {
     path: "/ShiftMaster",
-    element: <ShiftMaster />,
+    element: (
+      <PrivateRoute>
+        <ShiftMaster />
+      </PrivateRoute>
+    ),
   },
   {
     path: "/Attendance",
-    element: <Attendance />,
+    element: (
+      <PrivateRoute>
+        <Attendance />
+      </PrivateRoute>
+    ),
   },
   {
     path: "/AddShift",
-    element: <AddShift />,
-  },
-  {
-    path: "/Request",
-    element: <Request />,
+    element: (
+      <PrivateRoute>
+        <AddShift />
+      </PrivateRoute>
+    ),
   },
   {
     path: "/Employees",
-    element: <Employees />,
+    element: (
+      <PrivateRoute>
+        <Employees />
+      </PrivateRoute>
+    ),
   },
   {
     path: "/Location",
-    element: <Location />,
+    element: (
+      <PrivateRoute>
+        <Location />
+      </PrivateRoute>
+    ),
   },
   {
     path: "/ShiftManagement",
-    element: <ShiftManagement />,
-  }
+    element: (
+      <PrivateRoute>
+        <ShiftManagement />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/AddLocation",
+    element: (
+      <PrivateRoute>
+        <AddLocation />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/Setting",
+    element: (
+      <PrivateRoute>
+        <Setting />
+      </PrivateRoute>
+    ),
+  },
 ]);
-
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
